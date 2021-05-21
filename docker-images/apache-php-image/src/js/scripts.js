@@ -6,6 +6,8 @@
 (function ($) {
     "use strict"; // Start of use strict
 
+    console.log(this);
+
     // Smooth scrolling using anime.js
     $('a.js-scroll-trigger[href*="#"]:not([href="#"])').on('click', function () {
         if (
