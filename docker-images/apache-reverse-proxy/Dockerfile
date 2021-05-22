@@ -6,5 +6,5 @@ COPY template/ /var/apache2/templates
 
 RUN apt-get update && apt install nano
 
-RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
+RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests headers
 RUN a2ensite 000-* 001-*
