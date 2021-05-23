@@ -10,6 +10,11 @@
 
     ServerName demo.res.ch
 
+    <Location /balancer-manager>
+      SetHandler balancer-manager
+    </Location>
+    ProxyPass /balancer-manager !
+
     <Proxy "balancer://dynamic">
 	    BalancerMember "http://<?php print "$dynamic_app_1"?>"
 	    BalancerMember "http://<?php print "$dynamic_app_2"?>"
