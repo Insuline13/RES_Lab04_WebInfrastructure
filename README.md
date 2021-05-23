@@ -219,6 +219,8 @@ Nous avons ensuite ouvert le balance-manager que nous avons ajouté dans le conf
 
 ## Step 7: Load balancing: round-robin vs sticky sessions
 
+Nous avons trouvé de la documentation sur le [round-robin](https://httpd.apache.org/docs/2.4/mod/mod_lbmethod_byrequests.html) sur le site d'Apache et nous l'avons implémenté. Les sticky sessions sont décris dans la description du  [mod_proxy_balancer](https://httpd.apache.org/docs/2.4/mod/mod_proxy_balancer.html).
+
 Pour cette étape, nous avons modifié le fichier `config-template.php` qui se trouve dans le dossier `docker_images/apache-reverse-proxy/` pour implémenter le round-robin et les sticky sessions:
 
 ```php
@@ -273,7 +275,7 @@ Pour vérifier le sticky session, nous allons sur notre balance-manager (`demo.r
 
 ## Step 9: Management UI
 
-Pour cette étape, nous avons décidé d'utiliser [Portainer](https://documentation.portainer.io/v2.0/deploy/ceinstalldocker/) sur Docker. Pour ce faire, si l'utilisateur se trouve sur Linux, il lui suffit d'exécuter les commandes suivantes:
+En cherchant des UI manager avec Docker sur internet, nous sommes tombés sur ce [site](https://www.how2shout.com/tools/4-best-docker-gui-tools-to-manage-containers-graphically.html). En le parcourant, nous avons décidé d'utiliser [Portainer](https://documentation.portainer.io/v2.0/deploy/ceinstalldocker/) sur Docker. Pour ce faire, si l'utilisateur se trouve sur Linux, il lui suffit d'exécuter les commandes suivantes:
 
 ```
 docker volume create portainer_data
