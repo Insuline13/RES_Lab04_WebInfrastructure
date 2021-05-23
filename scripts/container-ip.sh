@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# getContainerIp - get the container's ip provided as argument
+# container-ip - get the container's ip provided as argument
 #
-# usage: getContainerIP <container_name>
+# usage: container-ip <container_name>
 #
 # Miguel Do Vale Lopes 21.05.2021
 
