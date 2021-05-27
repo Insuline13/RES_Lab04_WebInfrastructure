@@ -2,11 +2,13 @@
 
 Autheurs: Alexandra Cerottini & Miguel Do Vale Lopes
 
-Date: 22.05.2021
+Date: 27.05.2021
 
 ## Step 1: Static HTTP server with apache httpd
 
-Nous avons premièrement créé les dossiers `docker-images/apache-php-image`  et implémenté notre configuration Docker dans le dossier `apache-php-image`.
+Cette étape est visible via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/step_1).
+
+Le but de cette étape est d'implémenter un serveur HTTP statique à l'aide de Docker et Apache httpd. Nous avons premièrement créé les dossiers `docker-images/apache-php-image`  et implémenté notre configuration Docker dans le dossier `apache-php-image`.
 
 Nous avons choisi l'image Docker qui nous permet d'utiliser un serveur apache httpd. Il s'agit de l'image [php](https://hub.docker.com/_/php) et plus exactement `php:7.2-apache`. 
 
@@ -18,7 +20,7 @@ FROM php:7.2-apache
 COPY src/ /var/www/html/
 ```
 
-La commande COPY permet de copier le contenu du dossier src dans le dossier `/var/www/html` à l'intérieur du container. Le dossier src contient un [template bootstrap](https://startbootstrap.com/theme/grayscale) utilisé comme site web statique.
+La commande FROM permet de récupérer l'image php en précisant la version. La commande COPY permet de copier le contenu du dossier src dans le dossier `/var/www/html` à l'intérieur du container. Le dossier src contient un [template bootstrap](https://startbootstrap.com/theme/grayscale) utilisé comme site web statique. Le fichier `index.html` de ce dossier a été adapté selon nos envies.
 
 Pour lancer ce container, il suffit de build l'image depuis l'emplacement du Dockerfile avec la commande: `docker build -t res/apache_php .` puis de le run avec `docker run -p 9090:80 res/apache_php`. Nous pouvons maintenant voir le résultat en ouvrant une page web et en allant sur `localhost:9090`. 
 
@@ -28,7 +30,9 @@ Les fichiers de configuration d'apache dans le container se trouvent dans le dos
 
 ## Step 2: Dynamic HTTP server with express.js
 
-Nous avons premièrement créé le dossier `express-image` dans le dossier `docker-images`.
+Cette étape est visible via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/step_2).
+
+Le but de cette étape est d'implémenter un serveur HTTP dynamique à l'aide de node.js et express.js. Nous avons premièrement créé le dossier `express-image` dans le dossier `docker-images`.
 
 Nous avons choisi l'image Docker qui nous permet d'utiliser `node.js` pour notre application web dynamique. Il s'agit de l'image [node](https://hub.docker.com/_/node) et plus exactement: `node:14.17`.
 
@@ -46,20 +50,22 @@ La commande `CMD` permet d'exécuter notre script lors du lancement du container
 
 Le dossier `src` est également copié et contient un fichier `index.js`. Ce fichier permet de générer une liste d'animaux avec leur race, nom, genre et date de naissance. Pour générer du contenu random, le module chance a été utilisé. Il a fallu l'ajouter à l'aide de la commande `npm install --save chance`. Les requêtes sont faites à l'aide du module express qu'il a aussi fallu ajouter.
 
-Pour lancer ce container, il suffit de build l'image depuis l'emplacement du Dockerfile avec la commande: `docker build -t res/express_animals .` puis de le run avec `docker run -p 3000:3000 res/express_animals`. Nous pouvons maintenant voir le résultat en ouvrant une page web et en allant sur `localhost:3030`. 
+Pour lancer ce container, il suffit de build l'image depuis l'emplacement du Dockerfile avec la commande: `docker build -t res/express_animals .` puis de le run avec `docker run -p 3000:3000 res/express_animals`. Nous pouvons maintenant voir le résultat en ouvrant une page web et en allant sur `localhost:3030`.
 
 
 
 ## Step 3: Reverse proxy with apache (static configuration)
 
-Nous avons premièrement créé le dossier `apache-reverse-proxy` dans le dossier `docker-images`.
+Cette étape est visible via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/step_3).
 
-Nous avons choisi l'image Docker qui nous permet d'utiliser un serveur apache httpd. Il s'agit de l'image [php](https://hub.docker.com/_/php) et plus exactement `php:7.4-apache` (nous avions premièrement utilisé l'image `php:7.2-apache` mais elle a du être changé lors de la step 5).
+Le but de cette étape est d'implémenter un reverse proxy statique avec Apache. Nous avons premièrement créé le dossier `apache-reverse-proxy` dans le dossier `docker-images`.
+
+Nous avons choisi l'image Docker qui nous permet d'utiliser un serveur apache httpd. Il s'agit de l'image [php](https://hub.docker.com/_/php) et plus exactement `php:7.2-apache` (nous avions premièrement utilisé l'image `php:7.2-apache` mais elle a dû être changée lors de la step 5).
 
 Un Dockerfile a ensuite été créé avec cette image.
 
 ```dockerfile
-FROM php:7.4-apache
+FROM php:7.2-apache
 
 COPY conf/ /etc/apache2
 
@@ -69,23 +75,23 @@ RUN a2ensite 000-* 001-*
 
 La commande `RUN` permet de lancer les scripts `a2enmod` (enable un module) et `a2ensite` (activer des sites).
 
-Le dossier `conf` est également copié et contient la configuration du reverse proxy.
+Le dossier `conf` est également copié. Celui-ci a été créé dans le dossier `apache-reverse-proxy` et contient la configuration du reverse proxy.
 
 Pour tester cette configuration, il faut tout d'abord modifier le fichier `etc/hosts` et y ajouter la ligne `127.0.0.1   demo.res.ch` (sur Linux).
 
 Ensuite, il faut exécuter ces diverses commandes qui permettront de lancer les containers:
 
 ```Dock
-Dans le dossier docker-images/apache-php-image:
+# Dans le dossier docker-images/apache-php-image:
 docker build -t res/apache_php .
 
-Dans le dossier docker-images/express-image:
+# Dans le dossier docker-images/express-image:
 docker build -t res/express_animals .
 
-Dans le dossier docker-images/apache-reverse-proxy:
+# Dans le dossier docker-images/apache-reverse-proxy:
 docker build -t res/apache_rp .
 
-Pour lancer les containers:
+# Pour lancer les containers:
 docker run -d --name apache_static res/apache_php
 docker run -d --name express_dynamic res/express_animals
 docker run --name apache_rp -p 8080:80 res/apache_rp
@@ -116,19 +122,39 @@ Le problème dans cette configuration est que nous devons regarder les adresses 
 
 ## Step 4: AJAX requests with JQuery
 
-Les trois Dockerfile ont été modifié pour installer nano qui nous permettra d'éditer des fichiers directement dans le container. Cette commande a donc été ajoutée: `RUN apt-get update && apt install nano`.
+Cette étape est visible via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/step_4).
 
-Dans cette étape, un script `animals.js` a été ajouté dans le dossier `docker-images/apache-php-image/src/js`. Ce script nous permet périodiquement de faire une requête HTTP en arrière plan sans recharger toute la page. Pour ce faire, nous avons utiliser [jQuery](https://api.jquery.com/jquery.getJSON/).  Nous avons également modifié le fichier index.html du dossier `docker-images/apache-php-image/src/` pour qu'il appelle notre script animals.js.
+Le but de cette étape est d'implémenter des requêtes AJAX depuis le serveur statique vers le serveur dynamique. Les trois Dockerfile ont été modifié pour installer nano qui nous permettra d'éditer des fichiers directement dans le container. Cette commande a donc été ajoutée: `RUN apt-get update && apt install nano`.
+
+Dans cette étape, un script `animals.js` a été ajouté dans le dossier `docker-images/apache-php-image/src/js`. Ce script nous permet périodiquement de faire une requête HTTP en arrière plan sans recharger toute la page. Pour ce faire, nous avons utiliser [jQuery](https://api.jquery.com/jquery.getJSON/).  Nous avons également modifié le fichier `index.html` du dossier `docker-images/apache-php-image/src/` pour qu'il appelle notre script `animals.js`.
+
+```js
+$(function() {
+  console.log("Loading animals");
+
+  function loadAnimals() {
+    $.getJSON( "/api/animals/", function(animals) {
+      console.log(animals);
+      $(".spawn-animal").text(animals[0].name + " the " + animals[0].animal);
+    });
+  };
+
+  loadAnimals();
+  setInterval(loadAnimals, 2000);
+});
+```
 
 Pour tester cette configuration, il faut rebuild les trois images que nous avions créée précédemment et relancer les containers en veillant bien à ce qu'ils aient la même adresse IP qu'auparavant.
 
-Lorsque nous sommes sur le `site demo.res.ch:8080`, nous pouvons voir les requêtes Ajax en appuyant sur la touche `f12`.
+Lorsque nous sommes sur le `site demo.res.ch:8080`, nous pouvons voir les requêtes Ajax en ouvrant les webTools et en regardant le trafic via le browser.
 
 Tout ceci ne fonctionnerait pas sans un reverse proxy car un mécanisme de sécurité se prénommant "Same-origin policy" a été spécifié pour prévenir certaines attaques. Cette politique nous dit qu'un script qui est exécuté et qui vient d'un certain nom de domaine, ne peut faire des requêtes que vers le même nom de domaine. Si on travaillait directement avec les adresses IP, on ne pourrait pas envoyer une requête AJAX sur les deux containers car ils n'ont pas la même adresse. Pour éviter ce problème, on met en place un reverse proxy qui agit comme un point d'entrée unique avec un nom DNS (demo.res.ch).
 
 
 
 ## Step 5: Dynamic reverse proxy configuration
+
+Cette étape est visible via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/step_5).
 
 Dans cette étape, nous avons remplacé la configuration statique par une configuration dynamique en définissant des variables d'environnement au lancement du container. Nous avons dû ajouter dans le dossier `apache-reverse-proxy` un fichier `apache2-foreground` que nous avons récupéré sur le [git](https://github.com/docker-library/php/tree/master/7.4/buster/apache) de php puis nous y avons ajouté notre setup:
 
@@ -140,6 +166,8 @@ echo "Static app URL: $STATIC_APP"
 echo "Dynamic app URL: $DYNAMIC_APP"
 php /var/apache2/templates/config-template.php > /etc/apache2/sites-available/001-reverse-proxy.conf
 ```
+
+La version 7.2 d'Apache n'étant plus disponible sur le site, nous avons modifié notre Dockerfile pour utiliser la version 7.4.
 
 On a aussi créé un dossier `conf` contenant le fichier config-template.php qui a remplacé la configuration statique du proxy. Un fichier config est ainsi généré au lancement du container en remplaçant dynamiquement les adresses IP par les variables d'envrionnement. 
 
@@ -167,7 +195,9 @@ Pour démarrer le container, il faut rebuild l'image et le lancer avec la comman
 
 ## Step 6: Load balancing: multiple server nodes
 
-Nous avons trouvé de la documentation sur un module [mod_proxy_balancer](https://httpd.apache.org/docs/2.4/mod/mod_proxy_balancer.html) sur le site d'Apache et nous l'avons implémenté.
+Cette étape et la suivante sont visibles via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/extra-loadBalancing).
+
+Le but de cette étape est d'implémenter un load balancing. Nous avons trouvé de la documentation sur un module [mod_proxy_balancer](https://httpd.apache.org/docs/2.4/mod/mod_proxy_balancer.html) sur le site d'Apache et nous l'avons implémenté.
 
 Pour ce faire, nous avons modifié le fichier `config-template.php` qui se trouve dans le dossier `docker_images/apache-reverse-proxy/` pour permettre l'ajout de deux autres variables d'envrionnements et pour implémenter le proxy balancer:
 
@@ -213,13 +243,17 @@ Nous avons également modifié le Dockerfile en ajoutant à la commande `RUN a2e
 
 Pour valider cette procédure, nous avons au préalable démarré deux containers statiques et deux containers dynamiques. Nous avons ensuite dû rebuild l'image puis lancer le container à nouveau avec la commande: `docker run -d -e STATIC_APP_1=172.17.0.2:80 -e STATIC_APP_2=172.17.0.3:80 -e DYNAMIC_APP_1=172.17.0.4:3000 -e DYNAMIC_APP_2=172.17.0.5:3000 --name apache_rp -p 8080:80 res/apache_rp`. 
 
-Nous avons ensuite ouvert le balance-manager que nous avons ajouté dans le config-template.php. Pour l'ouvrir il suffit de taper `demo.res.ch:8080/balance-manager`. Nous tuons ensuite un container statique et un container dynamique et nous regardons si le site est toujours fonctionnel et si les charges ont été placées sur un seul serveur grâce au balance-manager.
+Nous avons ensuite ouvert le balance-manager que nous avons ajouté dans le config-template.php dans les dernières étapes. Pour l'ouvrir il suffit de taper `demo.res.ch:8080/balance-manager`. Nous tuons ensuite un container statique et un container dynamique faisant passer leur status à "Init Err". On remarque ensuite que les deux autres serveurs reprennent la charge, en voyant leur nombre "Elected" augmenter.
+
+![image-20210527093912732](figures/image-20210527093912732.png)
 
 
 
 ## Step 7: Load balancing: round-robin vs sticky sessions
 
-Nous avons trouvé de la documentation sur le [round-robin](https://httpd.apache.org/docs/2.4/mod/mod_lbmethod_byrequests.html) sur le site d'Apache et nous l'avons implémenté. Les sticky sessions sont décris dans la description du  [mod_proxy_balancer](https://httpd.apache.org/docs/2.4/mod/mod_proxy_balancer.html).
+Cette étape et la précédante sont visibles via cette [branche](https://github.com/Insuline13/RES_Lab04_WebInfrastructure/tree/extra-loadBalancing).
+
+Le but de cette étape est d'implémenter le round-robin ainsi que le sticky sessions. Nous avons trouvé de la documentation sur le [round-robin](https://httpd.apache.org/docs/2.4/mod/mod_lbmethod_byrequests.html) sur le site d'Apache et nous l'avons implémenté sur les serveurs dynamqiues. Les sticky sessions sont décris dans la description du [mod_proxy_balancer](https://httpd.apache.org/docs/2.4/mod/mod_proxy_balancer.html) et ont été implémentés sur les serveurs statiques.
 
 Pour cette étape, nous avons modifié le fichier `config-template.php` qui se trouve dans le dossier `docker_images/apache-reverse-proxy/` pour implémenter le round-robin et les sticky sessions:
 
@@ -267,21 +301,25 @@ Nous avons également modifié le Dockerfile pour ajouter l'option `headers` à 
 
 Pour valider cette procédure, nous avons au préalable démarré deux containers statiques et deux containers dynamiques. Nous avons ensuite dû rebuild l'image puis lancer le container à nouveau avec la commande: `docker run -d -e STATIC_APP_1=172.17.0.2:80 -e STATIC_APP_2=172.17.0.3:80 -e DYNAMIC_APP_1=172.17.0.4:3000 -e DYNAMIC_APP_2=172.17.0.5:3000 --name apache_rp -p 8080:80 res/apache_rp`. 
 
-Pour vérifier le round-robin, nous allons sur notre balance-manager (`demo.res.ch:8080/balance-manager` sur un navigateur) et nous regardons le "LoadBalancer Status for balancer://dynamic ..." et nous cherchons la case "Elected". Nous pouvons voir que le compteur augmente de manière alternée entre les deux serveurs lorsque l'on rafraichit la page du load balancer régulièrement. Si nous tuons un serveur dynamique, nous pouvons voir que seulement le compteur du serveur dynamique restant augmentera.
+Pour vérifier le round-robin, nous allons sur notre balance-manager (`demo.res.ch:8080/balance-manager` sur un navigateur) et nous regardons le "LoadBalancer Status for balancer://dynamic ..." et nous cherchons la case "Elected". Nous pouvons voir que le compteur augmente de manière alternée entre les deux serveurs lorsque l'on rafraichit la page du load balancer régulièrement. Si nous tuons un serveur dynamique, nous pouvons voir que seulement le compteur du serveur dynamique restant augmentera (cf. Step 6).
 
-Pour vérifier le sticky session, nous allons sur notre balance-manager (`demo.res.ch:8080/balance-manager` sur un navigateur) et nous regardons le "LoadBalancer Status for balancer://static ..." et nous cherchons la case "StickySession". Nous voyons que ROUTEID y est écrit alors qu'auparavant la case comportait la mention (None).
+Pour vérifier le sticky session, nous allons sur notre balance-manager (`demo.res.ch:8080/balance-manager` sur un navigateur) et nous regardons le "LoadBalancer Status for balancer://static ..." et nous cherchons la case "StickySession". Nous voyons que ROUTEID y est écrit alors qu'auparavant la case comportait la mention (None). Nous constatons que chaque serveur statique possède un numéro de route (1 et 2).
+
+![image-20210527100212419](figures/image-20210527100212419.png)
 
 
 
 ## Step 9: Management UI
 
-En cherchant des UI manager avec Docker sur internet, nous sommes tombés sur ce [site](https://www.how2shout.com/tools/4-best-docker-gui-tools-to-manage-containers-graphically.html). En le parcourant, nous avons décidé d'utiliser [Portainer](https://documentation.portainer.io/v2.0/deploy/ceinstalldocker/) sur Docker. Pour ce faire, si l'utilisateur se trouve sur Linux, il lui suffit d'exécuter les commandes suivantes:
+Le but de cette étape est de contrôler l'envrionnement Docker depuis le web. En cherchant des UI manager avec Docker sur internet, nous sommes tombés sur ce [site](https://www.how2shout.com/tools/4-best-docker-gui-tools-to-manage-containers-graphically.html). En le parcourant, nous avons décidé d'utiliser [Portainer](https://documentation.portainer.io/v2.0/deploy/ceinstalldocker/) sur Docker. Pour ce faire, si l'utilisateur se trouve sur Linux, il lui suffit d'exécuter les commandes suivantes:
 
 ```
 docker volume create portainer_data
 docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
 ```
 
-Il faut ensuite aller sur `localhost:9090` pour manager ses containers. Lors de la première connexion, il est demandé de choisir un mot de passe pour le compte admin. Il faut ensuite cliquer sur "Gérer l'envrionnement docker local" pour accéder à notre infrastructure.
+Il faut ensuite aller sur `localhost:9000` pour manager ses containers. Lors de la première connexion, il est demandé de choisir un mot de passe pour le compte admin. Il faut ensuite cliquer sur "Gérer l'environnement docker local" pour accéder à notre infrastructure.
 
 Pour valider cette procédure, nous avons éteint puis rallumé un container Docker depuis l'interface tout en vérifiant entre deux sur un terminal en faisant un `docker ps` que le container n'apparaissait plus puis qu'il réapparaissait par la suite.
+
+![image-20210527101852119](figures/image-20210527101852119.png)
