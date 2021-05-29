@@ -48,7 +48,7 @@ CMD ["node","/opt/app/index.js"]
 
 La commande `CMD` permet d'exécuter notre script lors du lancement du container.
 
-Le dossier `src` est également copié et a été créé dans le dossier `express-image`. Il contient un fichier `index.js`. Ce fichier permet de générer une liste d'animaux avec leur race, nom, genre et date de naissance. Pour générer du contenu random, le module chance a été utilisé. Il a fallu l'ajouter à l'aide de la commande `npm install --save chance`. Les requêtes sont faites à l'aide du module express qu'il a aussi fallu ajouter. La commande `npm initi` a permis la création d'un `package.json`.
+Le dossier `src` est également copié et a été créé dans le dossier `express-image`. Il contient un fichier `index.js`. Ce fichier permet de générer une liste d'animaux avec leur race, nom, genre et date de naissance. Pour générer du contenu random, le module chance a été utilisé. Il a fallu l'ajouter à l'aide de la commande `npm install --save chance`. Les requêtes sont faites à l'aide du module express qu'il a aussi fallu ajouter. La commande `npm init` a permis la création d'un `package.json`.
 
 Pour lancer ce container, il suffit de build l'image depuis l'emplacement du Dockerfile avec la commande: `docker build -t res/express_animals .` puis de le run avec `docker run -p 3000:3000 res/express_animals`. Nous pouvons maintenant voir le résultat en ouvrant une page web et en allant sur `localhost:3030`.
 
