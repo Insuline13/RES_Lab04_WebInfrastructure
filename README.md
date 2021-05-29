@@ -48,7 +48,7 @@ CMD ["node","/opt/app/index.js"]
 
 La commande `CMD` permet d'exécuter notre script lors du lancement du container.
 
-Le dossier `src` est également copié et contient un fichier `index.js`. Ce fichier permet de générer une liste d'animaux avec leur race, nom, genre et date de naissance. Pour générer du contenu random, le module chance a été utilisé. Il a fallu l'ajouter à l'aide de la commande `npm install --save chance`. Les requêtes sont faites à l'aide du module express qu'il a aussi fallu ajouter.
+Le dossier `src` est également copié et a été créé dans le dossier `express-image`. Il contient un fichier `index.js`. Ce fichier permet de générer une liste d'animaux avec leur race, nom, genre et date de naissance. Pour générer du contenu random, le module chance a été utilisé. Il a fallu l'ajouter à l'aide de la commande `npm install --save chance`. Les requêtes sont faites à l'aide du module express qu'il a aussi fallu ajouter. La commande `npm initi` a permis la création d'un `package.json`.
 
 Pour lancer ce container, il suffit de build l'image depuis l'emplacement du Dockerfile avec la commande: `docker build -t res/express_animals .` puis de le run avec `docker run -p 3000:3000 res/express_animals`. Nous pouvons maintenant voir le résultat en ouvrant une page web et en allant sur `localhost:3030`.
 
@@ -126,7 +126,7 @@ Cette étape est visible via cette [branche](https://github.com/Insuline13/RES_L
 
 Le but de cette étape est d'implémenter des requêtes AJAX depuis le serveur statique vers le serveur dynamique. Les trois Dockerfile ont été modifié pour installer nano qui nous permettra d'éditer des fichiers directement dans le container. Cette commande a donc été ajoutée: `RUN apt-get update && apt install nano`.
 
-Dans cette étape, un script `animals.js` a été ajouté dans le dossier `docker-images/apache-php-image/src/js`. Ce script nous permet périodiquement de faire une requête HTTP en arrière plan sans recharger toute la page. Pour ce faire, nous avons utiliser [jQuery](https://api.jquery.com/jquery.getJSON/).  Nous avons également modifié le fichier `index.html` du dossier `docker-images/apache-php-image/src/` pour qu'il appelle notre script `animals.js`.
+Dans cette étape, un script `animals.js` a été ajouté dans le dossier `docker-images/apache-php-image/src/js`. Ce script nous permet périodiquement de faire une requête HTTP en arrière plan sans recharger toute la page. Pour ce faire, nous avons utiliser [jQuery](https://api.jquery.com/jquery.getJSON/). Nous avons également modifié le fichier `index.html` du dossier `docker-images/apache-php-image/src/` pour qu'il appelle notre script `animals.js`.
 
 ```js
 $(function() {
@@ -191,7 +191,7 @@ Pour ce faire, nous avons ajouté cette commande dans le Dockerfile: `COPY apach
 
 Pour démarrer le container, il faut rebuild l'image et le lancer avec la commande `docker run -e STATIC_APP <adresse_ip1> -e DYNAMIC_APP <adresse_ip2> res/apache_rp`.
 
-
+Le fichier `001-reverse-proxy.conf` a été vidé car il ne nous est plus vraiment utile. Par contre, nous l'avons gardé pour le bon fonctionnement de la commande `RUN a2ensite 001-*` du Dockerfile.
 
 ## Step 6: Load balancing: multiple server nodes
 
